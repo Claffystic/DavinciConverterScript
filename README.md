@@ -1,5 +1,5 @@
 # DavinciConverterScript
-Script for converting .MOV to MP4 and vice versa
+Script for converting MOV to MP4 and vice versa
 
 ### Requirements:
 - ffmpeg
