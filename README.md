@@ -19,4 +19,4 @@ Or recursively inside a directory:
 ./converter.sh ~/Path/to/dir/
 ```
 
-Vibe coded lmao
+Vibe coded lmao so milage may vary
