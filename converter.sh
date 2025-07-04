@@ -15,15 +15,18 @@ convert_file() {
     mp4|MP4)
       output_file="${filename}.mov"
       ffmpeg -y -i "$input_file" \
-        -vcodec mjpeg -q:v 2 \
-        -acodec pcm_s16be -q:a 0 \
-        -f mov "$output_file"
+        -c:v dnxhd \
+        -vf "scale=1920:1080,fps=60000/1001,format=yuv422p" \
+        -b:v 90M \
+        -c:a pcm_s16le \
+        "$output_file"
       ;;
+
     mov|MOV)
       output_file="${filename}.mp4"
       ffmpeg -y -i "$input_file" \
         -vf scale=in_range=full:out_range=tv \
-        -c:v libx264 -pix_fmt yuv420p -r 30 \
+        -c:v libx264 -pix_fmt yuv420p -r 60 \
         -c:a aac -movflags +faststart \
         "$output_file"
       ;;
