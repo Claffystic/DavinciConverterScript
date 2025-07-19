@@ -1,6 +1,9 @@
 #!/bin/bash
 
-# Usage check
+# Usage: ./converter.sh <video_file_or_directory>
+
+set -e
+
 if [ $# -ne 1 ]; then
   echo "Usage: $0 <video_file_or_directory>"
   exit 1
@@ -11,13 +14,13 @@ convert_file() {
   extension="${input_file##*.}"
   filename="${input_file%.*}"
 
+  echo "🔄 Converting: $input_file"
+
   case "$extension" in
     mp4|MP4)
       output_file="${filename}.mov"
       ffmpeg -y -i "$input_file" \
-        -c:v dnxhd \
-        -vf "scale=1920:1080,fps=60000/1001,format=yuv422p" \
-        -b:v 90M \
+        -c:v prores_ks -profile:v 3 -pix_fmt yuv422p10le \
         -c:a pcm_s16le \
         "$output_file"
       ;;
@@ -25,13 +28,13 @@ convert_file() {
     mov|MOV)
       output_file="${filename}.mp4"
       ffmpeg -y -i "$input_file" \
-        -vf scale=in_range=full:out_range=tv \
+        -vf "scale=in_range=full:out_range=tv" \
         -c:v libx264 -pix_fmt yuv420p -r 60 \
         -c:a aac -movflags +faststart \
         "$output_file"
       ;;
     *)
-      echo "Skipped (unsupported extension): $input_file"
+      echo "⏭️ Skipped (unsupported extension): $input_file"
       return
       ;;
   esac
@@ -50,9 +53,8 @@ if [ -f "$1" ]; then
 elif [ -d "$1" ]; then
   export -f convert_file
   find "$1" -type f \( -iname "*.mp4" -o -iname "*.mov" \) -print0 |
-    xargs -0 -n 1 bash -c 'convert_file "$0"' 
+    xargs -0 -n 1 -I {} bash -c 'convert_file "$@"' _ {}
 else
-  echo "Error: $1 is not a valid file or directory"
+  echo "❌ Error: '$1' is not a valid file or directory"
   exit 1
 fi
-
