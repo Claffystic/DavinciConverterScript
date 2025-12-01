@@ -20,7 +20,7 @@ convert_file() {
     mp4|MP4)
       output_file="${filename}.mov"
       ffmpeg -y -i "$input_file" \
-        -c:v prores_ks -profile:v 3 -pix_fmt yuv422p10le \
+        -c:v prores_ks -profile:v 1 -pix_fmt yuv422p10le \
         -c:a pcm_s16le \
         "$output_file"
       ;;
